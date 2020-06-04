@@ -1,60 +1,16 @@
-import express from '../node_modules/express/index.js';
-import knex from './database/connection.ts';
+import express from 'express';
+
+import CollectsController from './controller/collectsController.ts';
+import ItemsController from './controller/itemsController.ts';
+const collectsController = new CollectsController();
+const itemsController = new ItemsController();
 
 const routes = express.Router();
 
-routes.get('/items', async (request: any, response: any) => {
-    const items = await knex('items').select('*');
-    const serializedItems = items.map(item => {
+routes.get('/items', itemsController.index);
 
-        return{
-           id: item.id,
-           title: item.title,
-           image: item.image,
-            url: `http://localhost:1337/uploads/${item.image}`
-
-        }
-    });
-
-    return response.json(serializedItems);
-});
-
-routes.post('/collectPoints', async (request: any, response: any) => {
-    const {
-        name,
-        email,
-        whatsapp,
-        latitude,
-        longitude,
-        city,
-        uf,
-        items
-    } = request.body;
-
-    //creates a transaction meaning knex only execute when both following inserts are sucessfull
-    const trx = await knex.transaction();
-   
-    const insertedIds = await trx('collects').insert({
-        image: 'temp-img',
-        name,
-        email,
-        whatsapp,
-        latitude,
-        longitude,
-        city,
-        uf
-    });
-
-    const collect_id = insertedIds[0]
-    const collectItems = items.map((item_id: number) =>{
-        return {
-            item_id,
-            collect_id
-        };
-    });
-    await trx('collect_items').insert(collectItems)
-
-    return response.json({sucess: true})
-});
+routes.post('/collectPoints', collectsController.create);
+routes.get('/collectPoints/', collectsController.index);
+routes.get('/collectPoints/:id', collectsController.show);
 
 export default routes
