@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import knex from '../database/connection.ts';
+import knex from '../database/connection';
 
 class collectsController {
     async index (request: Request, response: Response) {
