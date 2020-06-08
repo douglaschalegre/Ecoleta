@@ -13,24 +13,37 @@ class collectsController {
         .where('uf', String(uf))
         .distinct()
         .select('collects.*');
-
-        return response.json(collects);
+        
+        const serializedCollects = collects.map(collect => {
+            return{
+                ...collects,
+                url: `http://192.168.0.35:1337/uploads/${collect.image}`
+            }
+        });
+    
+        return response.json(serializedCollects);
     }
 
     async show (request: Request, response: Response) {
         const { id } = request.params;
 
         const collectPoint = await knex('collects').where('id', id).first();
+
         if(!collectPoint){
             return response.status(400).json({ message: `No collection point with ${Number(id)}`});
         }
+
+        const serializedCollect = {
+                ...collectPoint,
+                url: `http://192.168.0.35:1337/uploads/${collectPoint.image}`
+        };
 
         const items = await knex('items')
         .join('collect_items', 'items.id' ,'=', 'collect_items.item_id')
         .where('collect_items.collect_id', id)
         .select('title');
 
-        return response.json({collectPoint, items});
+        return response.json({serializedCollect, items});
     }
 
     async create (request: Request, response: Response) {
@@ -50,7 +63,7 @@ class collectsController {
         const trx = await knex.transaction();
        
         const collects = {
-            image: 'temp-img',
+            image: request.file.filename,
             name,
             email,
             whatsapp,
@@ -62,7 +75,9 @@ class collectsController {
         const insertedIds = await trx('collects').insert(collects);
     
         const collect_id = insertedIds[0]
-        const collectItems = items.map((item_id: number) => {
+        const collectItems = items.split(',')
+        .map((item: string) => Number(item.trim()))
+        .map((item_id: number) => {
             return {
                 item_id,
                 collect_id

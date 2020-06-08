@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import knex from '../database/connection.ts';
+import knex from '../database/connection';
 
 class itemsController {
     async index(request: Request, response: Response){
@@ -10,7 +10,6 @@ class itemsController {
                title: item.title,
                image: item.image,
                 url: `http://192.168.0.35:1337/uploads/${item.image}`
-    
             }
         });
     

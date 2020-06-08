@@ -17,6 +17,7 @@ interface Item{
 interface CollectionPoints{
   id: number,
   image: string,
+  url: string;
   name: string,
   latitude: number,
   longitude: number,
@@ -115,7 +116,7 @@ const Collect = () => {
              coordinate={{latitude:item.latitude, longitude:item.longitude}}
              >
               <View style={styles.mapMarkerContainer}>
-                <Image style={styles.mapMarkerImage} source={{uri: item.image}} />
+                <Image style={styles.mapMarkerImage} source={{uri: item.url}} />
           <Text style={styles.mapMarkerTitle}>{item.name}</Text>
               </View>
           </Marker>

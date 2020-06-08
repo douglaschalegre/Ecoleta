@@ -16,6 +16,7 @@ interface Params{
 interface Data{
   collectPoint: {
     image: string,
+    url: string,
     name: string,
     email: string,
     whatsapp: string,
@@ -66,7 +67,7 @@ const Detail = () => {
         <Icon name="arrow-left" size={20} color="#34cb79"/>
       </TouchableOpacity>
 
-      <Image style={styles.pointImage} source={{uri: data.collectPoint.image }}/>
+      <Image style={styles.pointImage} source={{uri: data.collectPoint.url }}/>
 
       <Text style={styles.pointName}>{data.collectPoint.name}</Text>
       <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
